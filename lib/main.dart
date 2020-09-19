@@ -17,10 +17,10 @@
  * along with Ultimate Goal Scorer.  If not, see <https://www.gnu.org/licenses/>.
  *
  * Original Author: Ansh Gandhi
- * Original Source Code: <https://github.com/anshgandhi4/UltimateGoalScorer/>
- * Original Webpage: <http://roboavatars.weebly.com/ultimategoalscorer.html/>
- * Original Web App: <https://roboavatars.nibbleguru.com/>
- * Original App: <https://play.google.com/store/apps/details?id=com.anshgandhi.ultimate_goal/>
+ * Original Source Code: <https://github.com/anshgandhi4/UltimateGoalScorer>
+ * Original Website: <http://roboavatars.weebly.com/ultimategoalscorer.html>
+ * Original Web App: <https://roboavatars.nibbleguru.com>
+ * Original Android App: <https://play.google.com/store/apps/details?id=com.anshgandhi.ultimate_goal>
  *
  * EVERYTHING ABOVE THIS LINE MUST BE KEPT AS IS UNDER GNU GPL LICENSE RULES.
  */
@@ -32,10 +32,30 @@ import 'package:flutter/services.dart';
 int ascore = 0;
 int tscore = 0;
 int egscore = 0;
-int score = 0;
+int totalscore = 0;
 
-Score totalScore = new Score();
-List modes = [Logo(), Auto(), Teleop(), EndGame()];
+Num _a1 = new Num();
+Num _a2 = new Num();
+Num _a3 = new Num();
+Num _a4 = new Num();
+Num _a5 = new Num();
+Num _a6 = new Num();
+
+Num _t1 = new Num();
+Num _t2 = new Num();
+Num _t3 = new Num();
+
+Num _eg1 = new Num();
+Num _eg2 = new Num();
+Num _eg3 = new Num();
+Num _eg4 = new Num();
+
+Score score = new Score();
+Auto auto = new Auto();
+Teleop teleop = new Teleop();
+EndGame endgame = new EndGame();
+List modes = [Logo(), auto, teleop, endgame];
+bool mobile = false;
 
 int getA() {
   return ascore;
@@ -43,8 +63,12 @@ int getA() {
 
 void setA(int newA) {
   ascore = newA;
-  score = getA() + getT() + getEG();
-  totalScore.rebuild();
+  totalscore = getA() + getT() + getEG();
+  score.rebuild();
+}
+
+void calcA() {
+  setA(15 * _a1.get().toInt() + 15 * _a2.getInt() + 3 * _a3.getInt() + 6 * _a4.getInt() + 12 * _a5.getInt() + 5 * _a6.getInt());
 }
 
 int getT() {
@@ -53,8 +77,12 @@ int getT() {
 
 void setT(int newT) {
   tscore = newT;
-  score = getA() + getT() + getEG();
-  totalScore.rebuild();
+  totalscore = getA() + getT() + getEG();
+  score.rebuild();
+}
+
+void calcT() {
+  setT(2 * _t1.getInt() + 4 * _t2.getInt() + 6 * _t3.getInt());
 }
 
 int getEG() {
@@ -63,8 +91,32 @@ int getEG() {
 
 void setEG(int newEG) {
   egscore = newEG;
-  score = getA() + getT() + getEG();
-  totalScore.rebuild();
+  totalscore = getA() + getT() + getEG();
+  score.rebuild();
+}
+
+void calcEG() {
+  setEG(15 * _eg1.getInt() + 5 * _eg2.getInt() + 5 * _eg3.getInt() + 20 * _eg4.getInt());
+}
+
+class Num {
+  double value = 0;
+
+  void set(double newValue) {
+    value = newValue;
+  }
+
+  void setInt(int newValue) {
+    value = newValue.toDouble();
+  }
+
+  double get() {
+    return value;
+  }
+
+  int getInt() {
+    return value.toInt();
+  }
 }
 
 void main() => runApp(MaterialApp(
@@ -80,7 +132,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade900,
+      backgroundColor: Colors.black,
       appBar: AppBar(
         title: Text(
             'Ultimate Goal Scorer',
@@ -90,7 +142,7 @@ class _HomeState extends State<Home> {
             ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.grey[850],
+        backgroundColor: Colors.grey.shade900,
         elevation: 0.0,
       ),
       body: Container(
@@ -98,7 +150,7 @@ class _HomeState extends State<Home> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             SizedBox(height: 8.0),
-            totalScore,
+            score,
             SizedBox(height: 8.0),
             Expanded(
               child: ListView.separated(
@@ -108,13 +160,13 @@ class _HomeState extends State<Home> {
                 itemBuilder: (BuildContext context, int index) {
                   return Container(
                     child: modes[index],
-                    margin: EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 0.0),
+                    margin: EdgeInsets.fromLTRB(mobile ? 5.0 : 15.0, 0.0, mobile ? 5.0 : 15.0, 0.0),
                   );
                 },
                 separatorBuilder: (BuildContext context, int index) => Card(
-                  color: Colors.grey[350],
+                  color: Colors.grey.shade300,
                   elevation: 0.0,
-                  margin: EdgeInsets.fromLTRB(30.0, 15.0, 30.0, 15.0),
+                  margin: EdgeInsets.fromLTRB(mobile ? 30.0 : 30.0, 15.0, mobile ? 30.0 : 30.0, 15.0),
                   child: SizedBox(height: 5.0),
                 ),
               ),
@@ -160,7 +212,7 @@ class _ScoreState extends State<Score> {
   @override
   Widget build(BuildContext context) {
     return Text(
-      'Total Score: $score',
+      'Total Score: $totalscore',
       textAlign: TextAlign.center,
       style: TextStyle(
         color: Colors.white,
@@ -172,6 +224,126 @@ class _ScoreState extends State<Score> {
 
   void rebuild() {
     setState(() {});
+  }
+}
+
+class CustomSlider extends StatefulWidget {
+  Num scorevar = new Num();
+  Function update = () {};
+  double minvar = 0;
+  double maxvar = 3;
+  dynamic parent = 0;
+
+  CustomSlider({Key key, this.scorevar, this.update, this.minvar, this.maxvar, this.parent}): super(key: key);
+
+  @override
+  _CustomSliderState createState() => _CustomSliderState();
+}
+
+class _CustomSliderState extends State<CustomSlider> {
+  @override
+  Widget build(BuildContext context) {
+    Num scorevar = widget.scorevar;
+    Function update = widget.update;
+    double minvar = widget.minvar;
+    double maxvar = widget.maxvar;
+    dynamic parent = widget.parent;
+
+    return SliderTheme(
+      data: SliderThemeData(
+        activeTickMarkColor: Colors.grey.shade200,
+        activeTrackColor: Colors.grey.shade700,
+        inactiveTickMarkColor: Colors.grey.shade300,
+        inactiveTrackColor: Colors.grey.shade500,
+        thumbColor: Colors.grey.shade800,
+      ),
+      child: Container(
+        width: 150.0,
+        child: Slider.adaptive(
+          value: scorevar.get(),
+          onChanged: (double value) {
+            scorevar.set(value);
+            update();
+            setState(() {});
+            parent.rebuild();
+          },
+          min: minvar,
+          max: maxvar,
+          divisions: (maxvar - minvar).toInt(),
+          label: '${scorevar.getInt()}',
+        ),
+      ),
+    );
+  }
+}
+
+class CustomTextField extends StatefulWidget {
+Num scorevar = new Num();
+Function update = () {};
+int maxlength = 0;
+dynamic parent = 0;
+
+CustomTextField({Key key, this.scorevar, this.update, this.maxlength, this.parent}): super(key: key);
+
+@override
+_CustomTextFieldState createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  @override
+  Widget build(BuildContext context) {
+    Num scorevar = widget.scorevar;
+    Function update = widget.update;
+    int maxlength = widget.maxlength;
+    dynamic parent = widget.parent;
+
+    return TextField(
+      autocorrect: false,
+      autofocus: false,
+      cursorColor: Colors.white,
+      cursorRadius: Radius.circular(2.0),
+      decoration: InputDecoration(
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey.shade400, width: 1.0),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey.shade400, width: 1.0),
+        ),
+        counterText: '',
+      ),
+      expands: false,
+      inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+      keyboardType: TextInputType.number,
+      maxLength: maxlength,
+      maxLengthEnforced: true,
+      onChanged: (String value) {
+        if (value == '' || value == null) {
+          scorevar.setInt(0);
+        } else {
+          scorevar.setInt(int.parse(value));
+        }
+        update();
+        setState(() {});
+        parent.rebuild();
+      },
+      onSubmitted: (String value) {
+        if (value == '' || value == null) {
+          scorevar.setInt(0);
+        } else {
+          scorevar.setInt(int.parse(value));
+        }
+        update();
+        setState(() {});
+        parent.rebuild();
+      },
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: 14.0,
+      ),
+      textAlign: TextAlign.center,
+      textAlignVertical: TextAlignVertical.center,
+      textDirection: TextDirection.ltr,
+    );
   }
 }
 
@@ -192,22 +364,21 @@ class _LogoState extends State<Logo> {
 }
 
 class Auto extends StatefulWidget {
+  _AutoState autostate = new _AutoState();
+
   @override
-  _AutoState createState() => _AutoState();
+  _AutoState createState() => autostate;
+
+  void rebuild() {
+    autostate.rebuild();
+  }
 }
 
 class _AutoState extends State<Auto> {
-  double _a1 = 0;
-  double _a2 = 0;
-  int _a3 = 0;
-  int _a4 = 0;
-  int _a5 = 0;
-  double _a6 = 0;
-
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.grey.shade800,
+      color: Colors.grey.shade900,
       elevation: 10.0,
       child: Padding(
         padding: EdgeInsets.all(10.0),
@@ -226,35 +397,12 @@ class _AutoState extends State<Auto> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                SliderTheme(
-                  data: SliderThemeData(
-                    activeTickMarkColor: Colors.grey.shade200,
-                    activeTrackColor: Colors.grey.shade700,
-                    inactiveTickMarkColor: Colors.grey.shade300,
-                    inactiveTrackColor: Colors.grey.shade500,
-                    thumbColor: Colors.grey.shade900,
-                  ),
-                  child: Container(
-                    width: 150.0,
-                    child: Slider.adaptive(
-                      value: _a1,
-                      onChanged: (double value) {
-                        _a1 = value;
-                        calcA();
-                        setState(() {});
-                      },
-                      min: 0,
-                      max: 2,
-                      divisions: 2,
-                      label: '${_a1.toInt()}',
-                    ),
-                  ),
-                ),
+                CustomSlider(scorevar: _a1, update: calcA, minvar: 0, maxvar: 2, parent: this),
                 Text(
                   'Wobble Goals Delivered',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 12.0,
+                    fontSize: mobile ? 12.0 : 18.0,
                   ),
                 ),
               ],
@@ -264,35 +412,12 @@ class _AutoState extends State<Auto> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                SliderTheme(
-                  data: SliderThemeData(
-                    activeTickMarkColor: Colors.grey.shade200,
-                    activeTrackColor: Colors.grey.shade700,
-                    inactiveTickMarkColor: Colors.grey.shade300,
-                    inactiveTrackColor: Colors.grey.shade500,
-                    thumbColor: Colors.grey.shade900,
-                  ),
-                  child: Container(
-                    width: 150.0,
-                    child: Slider.adaptive(
-                      value: _a2,
-                      onChanged: (double value) {
-                        _a2 = value;
-                        calcA();
-                        setState(() {});
-                      },
-                      min: 0,
-                      max: 3,
-                      divisions: 3,
-                      label: '${_a2.toInt()}',
-                    ),
-                  ),
-                ),
+                CustomSlider(scorevar: _a2, update: calcA, minvar: 0, maxvar: 3, parent: this),
                 Text(
                   'Power Shot Targets Knocked',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 12.0,
+                    fontSize: mobile ? 12.0 : 18.0,
                   ),
                 ),
               ],
@@ -304,57 +429,14 @@ class _AutoState extends State<Auto> {
               children: <Widget>[
                 SizedBox(
                   width: 60.0,
-                  child: TextField(
-                    autocorrect: false,
-                    autofocus: false,
-                    cursorColor: Colors.white,
-                    cursorRadius: Radius.circular(2.0),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder (
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade200,
-                        ),
-                      ),
-                      counterText: '',
-                    ),
-                    expands: false,
-                    inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
-                    keyboardType: TextInputType.number,
-                    maxLength: 2,
-                    maxLengthEnforced: true,
-                    onChanged: (String value) {
-                      if (value == '' || value == null) {
-                        _a3 = 0;
-                      } else {
-                        _a3 = int.parse(value);
-                      }
-                      calcA();
-                      setState(() {});
-                    },
-                    onSubmitted: (String value) {
-                      if (value == '' || value == null) {
-                        _a3 = 0;
-                      } else {
-                        _a3 = int.parse(value);
-                      }
-                      calcA();
-                      setState(() {});
-                    },
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14.0,
-                    ),
-                    textAlign: TextAlign.center,
-                    textAlignVertical: TextAlignVertical.center,
-                    textDirection: TextDirection.ltr,
-                  ),
+                  child: CustomTextField(scorevar: _a3, update: calcA, maxlength: 2, parent: this),
                 ),
                 SizedBox(width: 20.0),
                 Text(
                   'Low Goal',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 12.0,
+                    fontSize: mobile ? 12.0 : 18.0,
                   ),
                 ),
               ],
@@ -366,57 +448,14 @@ class _AutoState extends State<Auto> {
               children: <Widget>[
                 SizedBox(
                   width: 60.0,
-                  child: TextField(
-                    autocorrect: false,
-                    autofocus: false,
-                    cursorColor: Colors.white,
-                    cursorRadius: Radius.circular(2.0),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder (
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade200,
-                        ),
-                      ),
-                      counterText: '',
-                    ),
-                    expands: false,
-                    inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
-                    keyboardType: TextInputType.number,
-                    maxLength: 2,
-                    maxLengthEnforced: true,
-                    onChanged: (String value) {
-                      if (value == '' || value == null) {
-                        _a4 = 0;
-                      } else {
-                        _a4 = int.parse(value);
-                      }
-                      calcA();
-                      setState(() {});
-                    },
-                    onSubmitted: (String value) {
-                      if (value == '' || value == null) {
-                        _a4 = 0;
-                      } else {
-                        _a4 = int.parse(value);
-                      }
-                      calcA();
-                      setState(() {});
-                    },
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14.0,
-                    ),
-                    textAlign: TextAlign.center,
-                    textAlignVertical: TextAlignVertical.center,
-                    textDirection: TextDirection.ltr,
-                  ),
+                  child: CustomTextField(scorevar: _a4, update: calcA, maxlength: 2, parent: this),
                 ),
                 SizedBox(width: 20.0),
                 Text(
                   'Mid Goal',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 12.0,
+                    fontSize: mobile ? 12.0 : 18.0,
                   ),
                 ),
               ],
@@ -428,57 +467,14 @@ class _AutoState extends State<Auto> {
               children: <Widget>[
                 SizedBox(
                   width: 60.0,
-                  child: TextField(
-                    autocorrect: false,
-                    autofocus: false,
-                    cursorColor: Colors.white,
-                    cursorRadius: Radius.circular(2.0),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder (
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade200,
-                        ),
-                      ),
-                      counterText: '',
-                    ),
-                    expands: false,
-                    inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
-                    keyboardType: TextInputType.number,
-                    maxLength: 2,
-                    maxLengthEnforced: true,
-                    onChanged: (String value) {
-                      if (value == '' || value == null) {
-                        _a5 = 0;
-                      } else {
-                        _a5 = int.parse(value);
-                      }
-                      calcA();
-                      setState(() {});
-                    },
-                    onSubmitted: (String value) {
-                      if (value == '' || value == null) {
-                        _a5 = 0;
-                      } else {
-                        _a5 = int.parse(value);
-                      }
-                      calcA();
-                      setState(() {});
-                    },
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14.0,
-                    ),
-                    textAlign: TextAlign.center,
-                    textAlignVertical: TextAlignVertical.center,
-                    textDirection: TextDirection.ltr,
-                  ),
+                  child: CustomTextField(scorevar: _a5, update: calcA, maxlength: 2, parent: this),
                 ),
                 SizedBox(width: 20.0),
                 Text(
                   'High Goal',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 12.0,
+                    fontSize: mobile ? 12.0 : 18.0,
                   ),
                 ),
               ],
@@ -488,35 +484,12 @@ class _AutoState extends State<Auto> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                SliderTheme(
-                  data: SliderThemeData(
-                    activeTickMarkColor: Colors.grey.shade200,
-                    activeTrackColor: Colors.grey.shade700,
-                    inactiveTickMarkColor: Colors.grey.shade300,
-                    inactiveTrackColor: Colors.grey.shade500,
-                    thumbColor: Colors.grey.shade900,
-                  ),
-                  child: Container(
-                    width: 150.0,
-                    child: Slider.adaptive(
-                      value: _a6,
-                      onChanged: (double value) {
-                        _a6 = value;
-                        calcA();
-                        setState(() {});
-                      },
-                      min: 0,
-                      max: 2,
-                      divisions: 2,
-                      label: '${_a6.toInt()}',
-                    ),
-                  ),
-                ),
+                CustomSlider(scorevar: _a6, update: calcA, minvar: 0, maxvar: 2, parent: this),
                 Text(
                   'Robots Parked',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 12.0,
+                    fontSize: mobile ? 12.0 : 18.0,
                   ),
                 ),
               ],
@@ -527,25 +500,27 @@ class _AutoState extends State<Auto> {
     );
   }
 
-  void calcA() {
-    setA(15 * _a1.toInt() + 15 * _a2.toInt() + 3 * _a3 + 6 * _a4 + 12 * _a5.toInt() + 5 * _a6.toInt());
+  void rebuild() {
+    setState(() {});
   }
 }
 
 class Teleop extends StatefulWidget {
+  _TeleopState teleopstate = new _TeleopState();
+
   @override
-  _TeleopState createState() => _TeleopState();
+  _TeleopState createState() => teleopstate;
+
+  void rebuild() {
+    teleopstate.rebuild();
+  }
 }
 
 class _TeleopState extends State<Teleop> {
-  int _t1 = 0;
-  int _t2 = 0;
-  int _t3 = 0;
-
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.grey.shade800,
+      color: Colors.grey.shade900,
       elevation: 10.0,
       child: Padding(
         padding: EdgeInsets.all(10.0),
@@ -566,57 +541,14 @@ class _TeleopState extends State<Teleop> {
               children: <Widget>[
                 SizedBox(
                   width: 60.0,
-                  child: TextField(
-                    autocorrect: false,
-                    autofocus: false,
-                    cursorColor: Colors.white,
-                    cursorRadius: Radius.circular(2.0),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder (
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade200,
-                        ),
-                      ),
-                      counterText: '',
-                    ),
-                    expands: false,
-                    inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
-                    keyboardType: TextInputType.number,
-                    maxLength: 2,
-                    maxLengthEnforced: true,
-                    onChanged: (String value) {
-                      if (value == '' || value == null) {
-                        _t1 = 0;
-                      } else {
-                        _t1 = int.parse(value);
-                      }
-                      calcT();
-                      setState(() {});
-                    },
-                    onSubmitted: (String value) {
-                      if (value == '' || value == null) {
-                        _t1 = 0;
-                      } else {
-                        _t1 = int.parse(value);
-                      }
-                      calcT();
-                      setState(() {});
-                    },
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14.0,
-                    ),
-                    textAlign: TextAlign.center,
-                    textAlignVertical: TextAlignVertical.center,
-                    textDirection: TextDirection.ltr,
-                  ),
+                  child: CustomTextField(scorevar: _t1, update: calcT, maxlength: 2, parent: this),
                 ),
                 SizedBox(width: 20.0),
                 Text(
                   'Low Goal',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 12.0,
+                    fontSize: mobile ? 12.0 : 18.0,
                   ),
                 ),
               ],
@@ -628,57 +560,14 @@ class _TeleopState extends State<Teleop> {
               children: <Widget>[
                 SizedBox(
                   width: 60.0,
-                  child: TextField(
-                    autocorrect: false,
-                    autofocus: false,
-                    cursorColor: Colors.white,
-                    cursorRadius: Radius.circular(2.0),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder (
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade200,
-                        ),
-                      ),
-                      counterText: '',
-                    ),
-                    expands: false,
-                    inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
-                    keyboardType: TextInputType.number,
-                    maxLength: 2,
-                    maxLengthEnforced: true,
-                    onChanged: (String value) {
-                      if (value == '' || value == null) {
-                        _t2 = 0;
-                      } else {
-                        _t2 = int.parse(value);
-                      }
-                      calcT();
-                      setState(() {});
-                    },
-                    onSubmitted: (String value) {
-                      if (value == '' || value == null) {
-                        _t2 = 0;
-                      } else {
-                        _t2 = int.parse(value);
-                      }
-                      calcT();
-                      setState(() {});
-                    },
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14.0,
-                    ),
-                    textAlign: TextAlign.center,
-                    textAlignVertical: TextAlignVertical.center,
-                    textDirection: TextDirection.ltr,
-                  ),
+                  child: CustomTextField(scorevar: _t2, update: calcT, maxlength: 2, parent: this),
                 ),
                 SizedBox(width: 20.0),
                 Text(
                   'Mid Goal',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 12.0,
+                    fontSize: mobile ? 12.0 : 18.0,
                   ),
                 ),
               ],
@@ -690,57 +579,14 @@ class _TeleopState extends State<Teleop> {
               children: <Widget>[
                 SizedBox(
                   width: 60.0,
-                  child: TextField(
-                    autocorrect: false,
-                    autofocus: false,
-                    cursorColor: Colors.white,
-                    cursorRadius: Radius.circular(2.0),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder (
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade200,
-                        ),
-                      ),
-                      counterText: '',
-                    ),
-                    expands: false,
-                    inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
-                    keyboardType: TextInputType.number,
-                    maxLength: 2,
-                    maxLengthEnforced: true,
-                    onChanged: (String value) {
-                      if (value == '' || value == null) {
-                        _t3 = 0;
-                      } else {
-                        _t3 = int.parse(value);
-                      }
-                      calcT();
-                      setState(() {});
-                    },
-                    onSubmitted: (String value) {
-                      if (value == '' || value == null) {
-                        _t3 = 0;
-                      } else {
-                        _t3 = int.parse(value);
-                      }
-                      calcT();
-                      setState(() {});
-                    },
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14.0,
-                    ),
-                    textAlign: TextAlign.center,
-                    textAlignVertical: TextAlignVertical.center,
-                    textDirection: TextDirection.ltr,
-                  ),
+                  child: CustomTextField(scorevar: _t3, update: calcT, maxlength: 2, parent: this),
                 ),
                 SizedBox(width: 20.0),
                 Text(
                   'High Goal',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 12.0,
+                    fontSize: mobile ? 12.0 : 18.0,
                   ),
                 ),
               ],
@@ -751,26 +597,27 @@ class _TeleopState extends State<Teleop> {
     );
   }
 
-  void calcT() {
-    setT(2 * _t1 + 4 * _t2 + 6 * _t3);
+  void rebuild() {
+    setState(() {});
   }
 }
 
 class EndGame extends StatefulWidget {
+  _EndGameState endgamestate = new _EndGameState();
+
   @override
-  _EndGameState createState() => _EndGameState();
+  _EndGameState createState() => endgamestate;
+
+  void rebuild() {
+    endgamestate.rebuild();
+  }
 }
 
 class _EndGameState extends State<EndGame> {
-  double _eg1 = 0;
-  int _eg2 = 0;
-  double _eg3 = 0;
-  double _eg4 = 0;
-
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.grey.shade800,
+      color: Colors.grey.shade900,
       elevation: 10.0,
       child: Padding(
         padding: EdgeInsets.all(10.0),
@@ -788,35 +635,12 @@ class _EndGameState extends State<EndGame> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                SliderTheme(
-                  data: SliderThemeData(
-                    activeTickMarkColor: Colors.grey.shade200,
-                    activeTrackColor: Colors.grey.shade700,
-                    inactiveTickMarkColor: Colors.grey.shade300,
-                    inactiveTrackColor: Colors.grey.shade500,
-                    thumbColor: Colors.grey.shade900,
-                  ),
-                  child: Container(
-                    width: 150.0,
-                    child: Slider.adaptive(
-                      value: _eg1,
-                      onChanged: (double value) {
-                        _eg1 = value;
-                        calcEG();
-                        setState(() {});
-                      },
-                      min: 0,
-                      max: 3,
-                      divisions: 3,
-                      label: '${_eg1.toInt()}',
-                    ),
-                  ),
-                ),
+                CustomSlider(scorevar: _eg1, update: calcEG, minvar: 0, maxvar: 3, parent: this),
                 Text(
                   'Power Shot Targets Knocked',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 12.0,
+                    fontSize: mobile ? 12.0 : 18.0,
                   ),
                 ),
               ],
@@ -827,57 +651,14 @@ class _EndGameState extends State<EndGame> {
               children: <Widget>[
                 SizedBox(
                   width: 60.0,
-                  child: TextField(
-                    autocorrect: false,
-                    autofocus: false,
-                    cursorColor: Colors.white,
-                    cursorRadius: Radius.circular(2.0),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder (
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade200,
-                        ),
-                      ),
-                      counterText: '',
-                    ),
-                    expands: false,
-                    inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
-                    keyboardType: TextInputType.number,
-                    maxLength: 2,
-                    maxLengthEnforced: true,
-                    onChanged: (String value) {
-                      if (value == '' || value == null) {
-                        _eg2 = 0;
-                      } else {
-                        _eg2 = int.parse(value);
-                      }
-                      calcEG();
-                      setState(() {});
-                    },
-                    onSubmitted: (String value) {
-                      if (value == '' || value == null) {
-                        _eg2 = 0;
-                      } else {
-                        _eg2 = int.parse(value);
-                      }
-                      calcEG();
-                      setState(() {});
-                    },
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14.0,
-                    ),
-                    textAlign: TextAlign.center,
-                    textAlignVertical: TextAlignVertical.center,
-                    textDirection: TextDirection.ltr,
-                  ),
+                  child: CustomTextField(scorevar: _eg2, update: calcEG, maxlength: 2, parent: this),
                 ),
                 SizedBox(width: 20.0),
                 Text(
                   'Total Rings on Wobble Goals',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 12.0,
+                    fontSize: mobile ? 12.0 : 18.0,
                   ),
                 ),
               ],
@@ -886,35 +667,12 @@ class _EndGameState extends State<EndGame> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                SliderTheme(
-                  data: SliderThemeData(
-                    activeTickMarkColor: Colors.grey.shade200,
-                    activeTrackColor: Colors.grey.shade700,
-                    inactiveTickMarkColor: Colors.grey.shade300,
-                    inactiveTrackColor: Colors.grey.shade500,
-                    thumbColor: Colors.grey.shade900,
-                  ),
-                  child: Container(
-                    width: 150.0,
-                    child: Slider.adaptive(
-                      value: _eg3,
-                      onChanged: (double value) {
-                        _eg3 = value;
-                        calcEG();
-                        setState(() {});
-                      },
-                      min: 0,
-                      max: 2,
-                      divisions: 2,
-                      label: '${_eg3.toInt()}',
-                    ),
-                  ),
-                ),
+                CustomSlider(scorevar: _eg3, update: calcEG, minvar: 0, maxvar: 2, parent: this),
                 Text(
                   'Wobble Goals Returned',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 12.0,
+                    fontSize: mobile ? 12.0 : 18.0,
                   ),
                 ),
               ],
@@ -923,35 +681,12 @@ class _EndGameState extends State<EndGame> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                SliderTheme(
-                  data: SliderThemeData(
-                    activeTickMarkColor: Colors.grey.shade200,
-                    activeTrackColor: Colors.grey.shade700,
-                    inactiveTickMarkColor: Colors.grey.shade300,
-                    inactiveTrackColor: Colors.grey.shade500,
-                    thumbColor: Colors.grey.shade900,
-                  ),
-                  child: Container(
-                    width: 150.0,
-                    child: Slider.adaptive(
-                      value: _eg4,
-                      onChanged: (double value) {
-                        _eg4 = value;
-                        calcEG();
-                        setState(() {});
-                      },
-                      min: 0,
-                      max: 2,
-                      divisions: 2,
-                      label: '${_eg4.toInt()}',
-                    ),
-                  ),
-                ),
+                CustomSlider(scorevar: _eg4, update: calcEG, minvar: 0, maxvar: 2, parent: this),
                 Text(
                   'Wobble Goals in Drop Zone',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 12.0,
+                    fontSize: mobile ? 12.0 : 18.0,
                   ),
                 ),
               ],
@@ -962,7 +697,7 @@ class _EndGameState extends State<EndGame> {
     );
   }
 
-  void calcEG() {
-    setEG(15 * _eg1.toInt() + 5 * _eg2 + 5 * _eg3.toInt() + 20 * _eg4.toInt());
+  void rebuild() {
+    setState(() {});
   }
 }
