@@ -32,6 +32,7 @@ import 'package:flutter/services.dart';
 int ascore = 0;
 int tscore = 0;
 int egscore = 0;
+int pscore = 0;
 int totalscore = 0;
 
 Num _a1 = new Num();
@@ -50,12 +51,34 @@ Num _eg2 = new Num();
 Num _eg3 = new Num();
 Num _eg4 = new Num();
 
+Num _p1 = new Num();
+Num _p2 = new Num();
+
 Score score = new Score();
+SectionTitle aTitle = new SectionTitle(title: 'Autonomous', update: getA);
+SectionTitle tTitle = new SectionTitle(title: 'Teleop', update: getT);
+SectionTitle egTitle = new SectionTitle(title: 'End Game', update: getEG);
+SectionTitle pTitle = new SectionTitle(title: 'Penalties', update: getP);
 Auto auto = new Auto();
 Teleop teleop = new Teleop();
 EndGame endgame = new EndGame();
-List modes = [Logo(), auto, teleop, endgame];
+Penalty penalty = new Penalty();
+List modes = [Logo(), auto, teleop, endgame, penalty];
 bool mobile = false;
+
+void titleReset() {
+  totalscore = getA() + getT() + getEG() + getP();
+  score.rebuild();
+  aTitle.rebuild();
+  tTitle.rebuild();
+  egTitle.rebuild();
+  try {
+    pTitle.rebuild();
+  } catch (e) {
+    print('overhere');
+    print(e);
+  }
+}
 
 int getA() {
   return ascore;
@@ -63,8 +86,7 @@ int getA() {
 
 void setA(int newA) {
   ascore = newA;
-  totalscore = getA() + getT() + getEG();
-  score.rebuild();
+  titleReset();
 }
 
 void calcA() {
@@ -77,8 +99,7 @@ int getT() {
 
 void setT(int newT) {
   tscore = newT;
-  totalscore = getA() + getT() + getEG();
-  score.rebuild();
+  titleReset();
 }
 
 void calcT() {
@@ -91,12 +112,24 @@ int getEG() {
 
 void setEG(int newEG) {
   egscore = newEG;
-  totalscore = getA() + getT() + getEG();
-  score.rebuild();
+  titleReset();
 }
 
 void calcEG() {
   setEG(15 * _eg1.getInt() + 5 * _eg2.getInt() + 5 * _eg3.getInt() + 20 * _eg4.getInt());
+}
+
+int getP() {
+  return pscore;
+}
+
+void setP(int newP) {
+  pscore = newP;
+  titleReset();
+}
+
+void calcP() {
+  setP(-10 * _p1.getInt() + -30 * _p2.getInt());
 }
 
 class Num {
@@ -197,6 +230,8 @@ class _HomeState extends State<Home> {
   }
 }
 
+int _reset = 0;
+
 class Score extends StatefulWidget {
   _ScoreState scorestate = new _ScoreState();
 
@@ -211,18 +246,116 @@ class Score extends StatefulWidget {
 class _ScoreState extends State<Score> {
   @override
   Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Text(
+          'Total Score: $totalscore',
+           textAlign: TextAlign.center,
+           style: TextStyle(
+             color: Colors.white,
+             fontSize: 32.0,
+             fontWeight: FontWeight.bold,
+           ),
+        ),
+        IconButton(
+          icon: Icon(
+            Icons.refresh,
+            color: Colors.white,
+          ),
+          tooltip: 'Reset',
+          onPressed: () {
+            setState(() {
+              auto.autostate.a1.rebuild();
+              auto.autostate.a2.rebuild();
+              auto.autostate.a3.rebuild();
+              auto.autostate.a4.rebuild();
+              auto.autostate.a5.rebuild();
+              auto.autostate.a6.rebuild();
+              teleop.teleopstate.t1.rebuild();
+              teleop.teleopstate.t2.rebuild();
+              teleop.teleopstate.t3.rebuild();
+              endgame.endgamestate.eg1.rebuild();
+              endgame.endgamestate.eg2.rebuild();
+              endgame.endgamestate.eg3.rebuild();
+              endgame.endgamestate.eg4.rebuild();
+              print(1);
+              penalty.penaltystate.p1.rebuild();
+              print(2);
+              penalty.penaltystate.p2.rebuild();
+              print(3);
+              _reset += 1;
+            });
+          },
+        ),
+        Text(
+          '$_reset',
+          style: TextStyle(
+            color: Colors.white,
+          )
+        ),
+      ],
+    );
+  }
+
+  void rebuild() {
+    setState(() {});
+  }
+}
+
+class SectionTitle extends StatefulWidget {
+  String title = '';
+  Function update = () {};
+
+  _SectionTitleState sectiontitlestate = new _SectionTitleState();
+
+  SectionTitle({Key key, this.title, this.update}): super(key: key);
+
+  @override
+  _SectionTitleState createState() {
+    sectiontitlestate = new _SectionTitleState();
+    return sectiontitlestate;
+  }
+
+  void rebuild() {
+    sectiontitlestate.rebuild();
+  }
+}
+
+class _SectionTitleState extends State<SectionTitle> {
+  String title = '';
+  Function update = () {};
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    title = widget.title;
+    update = widget.update;
+    print('building: ${update()}');
+
     return Text(
-      'Total Score: $totalscore',
+      '$title: ${update().toInt()}',
       textAlign: TextAlign.center,
       style: TextStyle(
         color: Colors.white,
-        fontSize: 32.0,
+        fontSize: 24.0,
         fontWeight: FontWeight.bold,
       ),
     );
   }
 
   void rebuild() {
+    print('inrebuild');
     setState(() {});
   }
 }
@@ -234,20 +367,32 @@ class CustomSlider extends StatefulWidget {
   double maxvar = 3;
   dynamic parent = 0;
 
+  _CustomSliderState customSliderState = new _CustomSliderState();
+
   CustomSlider({Key key, this.scorevar, this.update, this.minvar, this.maxvar, this.parent}): super(key: key);
 
   @override
-  _CustomSliderState createState() => _CustomSliderState();
+  _CustomSliderState createState() => customSliderState;
+
+  void rebuild() {
+    customSliderState.rebuild();
+  }
 }
 
 class _CustomSliderState extends State<CustomSlider> {
+  Num scorevar = new Num();
+  Function update;
+  double minvar;
+  double maxvar;
+  dynamic parent;
+
   @override
   Widget build(BuildContext context) {
-    Num scorevar = widget.scorevar;
-    Function update = widget.update;
-    double minvar = widget.minvar;
-    double maxvar = widget.maxvar;
-    dynamic parent = widget.parent;
+    scorevar = widget.scorevar;
+    update = widget.update;
+    minvar = widget.minvar;
+    maxvar = widget.maxvar;
+    parent = widget.parent;
 
     return SliderTheme(
       data: SliderThemeData(
@@ -265,7 +410,6 @@ class _CustomSliderState extends State<CustomSlider> {
             scorevar.set(value);
             update();
             setState(() {});
-            parent.rebuild();
           },
           min: minvar,
           max: maxvar,
@@ -275,39 +419,60 @@ class _CustomSliderState extends State<CustomSlider> {
       ),
     );
   }
+
+  void rebuild() {
+    setState(() {
+      scorevar.set(0);
+      update();
+    });
+  }
 }
 
 class CustomTextField extends StatefulWidget {
-Num scorevar = new Num();
-Function update = () {};
-int maxlength = 0;
-dynamic parent = 0;
+  Num scorevar = new Num();
+  Function update = () {};
+  int maxlength = 0;
+  dynamic parent = 0;
 
-CustomTextField({Key key, this.scorevar, this.update, this.maxlength, this.parent}): super(key: key);
+  _CustomTextFieldState customTextFieldState = new _CustomTextFieldState();
 
-@override
-_CustomTextFieldState createState() => _CustomTextFieldState();
+  CustomTextField({Key key, this.scorevar, this.update, this.maxlength, this.parent}): super(key: key);
+
+  @override
+  _CustomTextFieldState createState() => customTextFieldState;
+
+  void rebuild() {
+    customTextFieldState.rebuild();
+  }
 }
 
 class _CustomTextFieldState extends State<CustomTextField> {
+  Num scorevar = new Num();
+  Function update;
+  int maxlength;
+  dynamic parent;
+
+  final _controller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    Num scorevar = widget.scorevar;
-    Function update = widget.update;
-    int maxlength = widget.maxlength;
-    dynamic parent = widget.parent;
+    scorevar = widget.scorevar;
+    update = widget.update;
+    maxlength = widget.maxlength;
+    parent = widget.parent;
 
     return TextField(
       autocorrect: false,
       autofocus: false,
+      controller: _controller,
       cursorColor: Colors.white,
       cursorRadius: Radius.circular(2.0),
       decoration: InputDecoration(
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey.shade400, width: 1.0),
+          borderSide: BorderSide(color: Colors.white, width: 2.0),
         ),
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey.shade400, width: 1.0),
+          borderSide: BorderSide(color: Colors.grey.shade400, width: 1.5),
         ),
         counterText: '',
       ),
@@ -324,7 +489,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
         }
         update();
         setState(() {});
-        parent.rebuild();
       },
       onSubmitted: (String value) {
         if (value == '' || value == null) {
@@ -334,7 +498,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
         }
         update();
         setState(() {});
-        parent.rebuild();
       },
       style: TextStyle(
         color: Colors.white,
@@ -344,6 +507,14 @@ class _CustomTextFieldState extends State<CustomTextField> {
       textAlignVertical: TextAlignVertical.center,
       textDirection: TextDirection.ltr,
     );
+  }
+
+  void rebuild() {
+    setState(() {
+      scorevar.setInt(0);
+      _controller.text = '';
+      update();
+    });
   }
 }
 
@@ -375,8 +546,33 @@ class Auto extends StatefulWidget {
 }
 
 class _AutoState extends State<Auto> {
+  CustomSlider a1;
+  CustomSlider a2;
+  CustomTextField a3;
+  CustomTextField a4;
+  CustomTextField a5;
+  CustomSlider a6;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    auto = new Auto();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    a1 = new CustomSlider(scorevar: _a1, update: calcA, minvar: 0, maxvar: 2, parent: this);
+    a2 = new CustomSlider(scorevar: _a2, update: calcA, minvar: 0, maxvar: 3, parent: this);
+    a3 = new CustomTextField(scorevar: _a3, update: calcA, maxlength: 2, parent: this);
+    a4 = new CustomTextField(scorevar: _a4, update: calcA, maxlength: 2, parent: this);
+    a5 = new CustomTextField(scorevar: _a5, update: calcA, maxlength: 2, parent: this);
+    a6 = new CustomSlider(scorevar: _a6, update: calcA, minvar: 0, maxvar: 2, parent: this);
+
     return Card(
       color: Colors.grey.shade900,
       elevation: 10.0,
@@ -384,20 +580,13 @@ class _AutoState extends State<Auto> {
         padding: EdgeInsets.all(10.0),
         child: Column(
           children: <Widget>[
-            Text(
-              'Autonomous: ${getA()}',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            aTitle,
             SizedBox(height: 5.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                CustomSlider(scorevar: _a1, update: calcA, minvar: 0, maxvar: 2, parent: this),
+                a1,
                 Text(
                   'Wobble Goals Delivered',
                   style: TextStyle(
@@ -412,7 +601,7 @@ class _AutoState extends State<Auto> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                CustomSlider(scorevar: _a2, update: calcA, minvar: 0, maxvar: 3, parent: this),
+                a2,
                 Text(
                   'Power Shot Targets Knocked',
                   style: TextStyle(
@@ -429,7 +618,7 @@ class _AutoState extends State<Auto> {
               children: <Widget>[
                 SizedBox(
                   width: 60.0,
-                  child: CustomTextField(scorevar: _a3, update: calcA, maxlength: 2, parent: this),
+                  child: a3,
                 ),
                 SizedBox(width: 20.0),
                 Text(
@@ -448,7 +637,7 @@ class _AutoState extends State<Auto> {
               children: <Widget>[
                 SizedBox(
                   width: 60.0,
-                  child: CustomTextField(scorevar: _a4, update: calcA, maxlength: 2, parent: this),
+                  child: a4,
                 ),
                 SizedBox(width: 20.0),
                 Text(
@@ -467,7 +656,7 @@ class _AutoState extends State<Auto> {
               children: <Widget>[
                 SizedBox(
                   width: 60.0,
-                  child: CustomTextField(scorevar: _a5, update: calcA, maxlength: 2, parent: this),
+                  child: a5,
                 ),
                 SizedBox(width: 20.0),
                 Text(
@@ -484,7 +673,7 @@ class _AutoState extends State<Auto> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                CustomSlider(scorevar: _a6, update: calcA, minvar: 0, maxvar: 2, parent: this),
+                a6,
                 Text(
                   'Robots Parked',
                   style: TextStyle(
@@ -517,8 +706,27 @@ class Teleop extends StatefulWidget {
 }
 
 class _TeleopState extends State<Teleop> {
+  CustomTextField t1;
+  CustomTextField t2;
+  CustomTextField t3;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    teleop = new Teleop();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    t1 = new CustomTextField(scorevar: _t1, update: calcT, maxlength: 2, parent: this);
+    t2 = new CustomTextField(scorevar: _t2, update: calcT, maxlength: 2, parent: this);
+    t3 = new CustomTextField(scorevar: _t3, update: calcT, maxlength: 2, parent: this);
+
     return Card(
       color: Colors.grey.shade900,
       elevation: 10.0,
@@ -526,14 +734,7 @@ class _TeleopState extends State<Teleop> {
         padding: EdgeInsets.all(10.0),
         child: Column(
           children: <Widget>[
-            Text(
-              'Teleop: ${getT()}',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            tTitle,
             SizedBox(height: 5.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -541,7 +742,7 @@ class _TeleopState extends State<Teleop> {
               children: <Widget>[
                 SizedBox(
                   width: 60.0,
-                  child: CustomTextField(scorevar: _t1, update: calcT, maxlength: 2, parent: this),
+                  child: t1,
                 ),
                 SizedBox(width: 20.0),
                 Text(
@@ -560,7 +761,7 @@ class _TeleopState extends State<Teleop> {
               children: <Widget>[
                 SizedBox(
                   width: 60.0,
-                  child: CustomTextField(scorevar: _t2, update: calcT, maxlength: 2, parent: this),
+                  child: t2,
                 ),
                 SizedBox(width: 20.0),
                 Text(
@@ -579,7 +780,7 @@ class _TeleopState extends State<Teleop> {
               children: <Widget>[
                 SizedBox(
                   width: 60.0,
-                  child: CustomTextField(scorevar: _t3, update: calcT, maxlength: 2, parent: this),
+                  child: t3,
                 ),
                 SizedBox(width: 20.0),
                 Text(
@@ -614,8 +815,29 @@ class EndGame extends StatefulWidget {
 }
 
 class _EndGameState extends State<EndGame> {
+  CustomSlider eg1;
+  CustomTextField eg2;
+  CustomSlider eg3;
+  CustomSlider eg4;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    endgame = new EndGame();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    eg1 = CustomSlider(scorevar: _eg1, update: calcEG, minvar: 0, maxvar: 3, parent: this);
+    eg2 = CustomTextField(scorevar: _eg2, update: calcEG, maxlength: 2, parent: this);
+    eg3 = CustomSlider(scorevar: _eg3, update: calcEG, minvar: 0, maxvar: 2, parent: this);
+    eg4 = CustomSlider(scorevar: _eg4, update: calcEG, minvar: 0, maxvar: 2, parent: this);
+
     return Card(
       color: Colors.grey.shade900,
       elevation: 10.0,
@@ -623,19 +845,12 @@ class _EndGameState extends State<EndGame> {
         padding: EdgeInsets.all(10.0),
         child: Column(
           children: <Widget>[
-            Text(
-              'End Game: ${getEG()}',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            egTitle,
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                CustomSlider(scorevar: _eg1, update: calcEG, minvar: 0, maxvar: 3, parent: this),
+                eg1,
                 Text(
                   'Power Shot Targets Knocked',
                   style: TextStyle(
@@ -651,7 +866,7 @@ class _EndGameState extends State<EndGame> {
               children: <Widget>[
                 SizedBox(
                   width: 60.0,
-                  child: CustomTextField(scorevar: _eg2, update: calcEG, maxlength: 2, parent: this),
+                  child: eg2,
                 ),
                 SizedBox(width: 20.0),
                 Text(
@@ -667,7 +882,7 @@ class _EndGameState extends State<EndGame> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                CustomSlider(scorevar: _eg3, update: calcEG, minvar: 0, maxvar: 2, parent: this),
+                eg3,
                 Text(
                   'Wobble Goals Returned',
                   style: TextStyle(
@@ -681,9 +896,100 @@ class _EndGameState extends State<EndGame> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                CustomSlider(scorevar: _eg4, update: calcEG, minvar: 0, maxvar: 2, parent: this),
+                eg4,
                 Text(
                   'Wobble Goals in Drop Zone',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: mobile ? 12.0 : 18.0,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void rebuild() {
+    setState(() {});
+  }
+}
+
+class Penalty extends StatefulWidget {
+  _PenaltyState penaltystate = new _PenaltyState();
+
+  @override
+  _PenaltyState createState() {
+    penaltystate = new _PenaltyState();
+    return penaltystate;
+  }
+
+  void rebuild() {
+    penaltystate.rebuild();
+  }
+}
+
+class _PenaltyState extends State<Penalty> {
+  CustomTextField p1;
+  CustomTextField p2;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    penalty = new Penalty();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    p1 = new CustomTextField(scorevar: _p1, update: calcP, maxlength: 2, parent: this);
+    p2 = new CustomTextField(scorevar: _p2, update: calcP, maxlength: 2, parent: this);
+
+    return Card(
+      color: Colors.grey.shade900,
+      elevation: 10.0,
+      child: Padding(
+        padding: EdgeInsets.all(10.0),
+        child: Column(
+          children: <Widget>[
+            pTitle,
+            SizedBox(height: 5.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                SizedBox(
+                  width: 60.0,
+                  child: p1,
+                ),
+                SizedBox(width: 20.0),
+                Text(
+                  'Minor',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: mobile ? 12.0 : 18.0,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 5.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                SizedBox(
+                  width: 60.0,
+                  child: p2,
+                ),
+                SizedBox(width: 20.0),
+                Text(
+                  'Major',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: mobile ? 12.0 : 18.0,
