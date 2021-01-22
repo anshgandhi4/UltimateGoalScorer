@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 Ansh Gandhi
+ * Copyright © 2020 - 2021 Ansh Gandhi
  *
  * This file is part of Ultimate Goal Scorer.
  *

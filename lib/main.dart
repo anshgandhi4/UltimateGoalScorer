@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 Ansh Gandhi
+ * Copyright © 2020 - 2021 Ansh Gandhi
  *
  * This file is part of Ultimate Goal Scorer.
  *
@@ -69,13 +69,28 @@ bool mobile = false;
 void titleReset() {
   totalscore = getA() + getT() + getEG() + getP();
   score.rebuild();
-  aTitle.rebuild();
-  tTitle.rebuild();
-  egTitle.rebuild();
+  try {
+    aTitle.rebuild();
+  } catch (e) {
+    print('aTitle');
+    print(e);
+  }
+  try {
+    tTitle.rebuild();
+  } catch (e) {
+    print('tTitle');
+    print(e);
+  }
+  try {
+    egTitle.rebuild();
+  } catch (e) {
+    print('egTitle');
+    print(e);
+  }
   try {
     pTitle.rebuild();
   } catch (e) {
-    print('overhere');
+    print('pTitle');
     print(e);
   }
 }
@@ -90,7 +105,7 @@ void setA(int newA) {
 }
 
 void calcA() {
-  setA(15 * _a1.get().toInt() + 15 * _a2.getInt() + 3 * _a3.getInt() + 6 * _a4.getInt() + 12 * _a5.getInt() + 5 * _a6.getInt());
+  setA(15 * _a1.getInt() + 15 * _a2.getInt() + 3 * _a3.getInt() + 6 * _a4.getInt() + 12 * _a5.getInt() + 5 * _a6.getInt());
 }
 
 int getT() {
@@ -233,13 +248,16 @@ class _HomeState extends State<Home> {
 int _reset = 0;
 
 class Score extends StatefulWidget {
-  _ScoreState scorestate = new _ScoreState();
+  _ScoreState scoreState = new _ScoreState();
 
   @override
-  _ScoreState createState() => scorestate;
+  _ScoreState createState() {
+    scoreState = new _ScoreState();
+    return scoreState;
+  }
 
   void rebuild() {
-    scorestate.rebuild();
+    scoreState.rebuild();
   }
 }
 
@@ -267,24 +285,34 @@ class _ScoreState extends State<Score> {
           tooltip: 'Reset',
           onPressed: () {
             setState(() {
-              auto.autostate.a1.rebuild();
-              auto.autostate.a2.rebuild();
-              auto.autostate.a3.rebuild();
-              auto.autostate.a4.rebuild();
-              auto.autostate.a5.rebuild();
-              auto.autostate.a6.rebuild();
-              teleop.teleopstate.t1.rebuild();
-              teleop.teleopstate.t2.rebuild();
-              teleop.teleopstate.t3.rebuild();
-              endgame.endgamestate.eg1.rebuild();
-              endgame.endgamestate.eg2.rebuild();
-              endgame.endgamestate.eg3.rebuild();
-              endgame.endgamestate.eg4.rebuild();
-              print(1);
-              penalty.penaltystate.p1.rebuild();
-              print(2);
-              penalty.penaltystate.p2.rebuild();
-              print(3);
+              try {
+                auto.reset();
+              } catch (e) {
+                print('auto');
+                print(e);
+              }
+              try {
+                teleop.reset();
+              } catch (e) {
+                print('teleop');
+                print(e);
+              }
+              try {
+                endgame.reset();
+              } catch (e) {
+                print('endgame');
+                print(e);
+              }
+              try {
+                penalty.reset();
+              } catch (e) {
+                print('penalty');
+                print(e);
+              }
+              calcA();
+              calcT();
+              calcEG();
+              calcP();
               _reset += 1;
             });
           },
@@ -308,18 +336,18 @@ class SectionTitle extends StatefulWidget {
   String title = '';
   Function update = () {};
 
-  _SectionTitleState sectiontitlestate = new _SectionTitleState();
+  _SectionTitleState sectionTitleState = new _SectionTitleState();
 
   SectionTitle({Key key, this.title, this.update}): super(key: key);
 
   @override
   _SectionTitleState createState() {
-    sectiontitlestate = new _SectionTitleState();
-    return sectiontitlestate;
+    sectionTitleState = new _SectionTitleState();
+    return sectionTitleState;
   }
 
   void rebuild() {
-    sectiontitlestate.rebuild();
+    sectionTitleState.rebuild();
   }
 }
 
@@ -361,7 +389,7 @@ class _SectionTitleState extends State<SectionTitle> {
 }
 
 class CustomSlider extends StatefulWidget {
-  Num scorevar = new Num();
+  String scorevar = '';
   Function update = () {};
   double minvar = 0;
   double maxvar = 3;
@@ -380,7 +408,7 @@ class CustomSlider extends StatefulWidget {
 }
 
 class _CustomSliderState extends State<CustomSlider> {
-  Num scorevar = new Num();
+  Num scorevar;
   Function update;
   double minvar;
   double maxvar;
@@ -388,7 +416,19 @@ class _CustomSliderState extends State<CustomSlider> {
 
   @override
   Widget build(BuildContext context) {
-    scorevar = widget.scorevar;
+    if (widget.scorevar == '_a1') {
+      scorevar = _a1;
+    } else if (widget.scorevar == '_a2') {
+      scorevar = _a2;
+    } else if (widget.scorevar == '_a6') {
+      scorevar = _a6;
+    } else if (widget.scorevar == '_eg1') {
+      scorevar = _eg1;
+    } else if (widget.scorevar == '_eg3') {
+      scorevar = _eg3;
+    } else if (widget.scorevar == '_eg4') {
+      scorevar = _eg4;
+    }
     update = widget.update;
     minvar = widget.minvar;
     maxvar = widget.maxvar;
@@ -409,7 +449,11 @@ class _CustomSliderState extends State<CustomSlider> {
           onChanged: (double value) {
             scorevar.set(value);
             update();
-            setState(() {});
+            auto.rebuild();
+            setState(() {
+              scorevar.set(value);
+              auto.rebuild();
+            });
           },
           min: minvar,
           max: maxvar,
@@ -422,14 +466,13 @@ class _CustomSliderState extends State<CustomSlider> {
 
   void rebuild() {
     setState(() {
-      scorevar.set(0);
       update();
     });
   }
 }
 
 class CustomTextField extends StatefulWidget {
-  Num scorevar = new Num();
+  String scorevar = '';
   Function update = () {};
   int maxlength = 0;
   dynamic parent = 0;
@@ -447,7 +490,7 @@ class CustomTextField extends StatefulWidget {
 }
 
 class _CustomTextFieldState extends State<CustomTextField> {
-  Num scorevar = new Num();
+  Num scorevar;
   Function update;
   int maxlength;
   dynamic parent;
@@ -456,7 +499,26 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   @override
   Widget build(BuildContext context) {
-    scorevar = widget.scorevar;
+    if (widget.scorevar == '_a3') {
+      scorevar = _a3;
+    } else if (widget.scorevar == '_a4') {
+      scorevar = _a4;
+    } else if (widget.scorevar == '_a5') {
+      scorevar = _a5;
+    } else if (widget.scorevar == '_t1') {
+      scorevar = _t1;
+    } else if (widget.scorevar == '_t2') {
+      scorevar = _t2;
+    } else if (widget.scorevar == '_t3') {
+      scorevar = _t3;
+    }  else if (widget.scorevar == '_eg2') {
+      scorevar = _eg2;
+    }  else if (widget.scorevar == '_p1') {
+      scorevar = _p1;
+    } else if (widget.scorevar == '_p2') {
+      scorevar = _p2;
+    }
+
     update = widget.update;
     maxlength = widget.maxlength;
     parent = widget.parent;
@@ -535,13 +597,20 @@ class _LogoState extends State<Logo> {
 }
 
 class Auto extends StatefulWidget {
-  _AutoState autostate = new _AutoState();
+  _AutoState autoState = new _AutoState();
 
   @override
-  _AutoState createState() => autostate;
+  _AutoState createState() {
+    autoState = new _AutoState();
+    return autoState;
+  }
+
+  void reset() {
+    autoState.reset();
+  }
 
   void rebuild() {
-    autostate.rebuild();
+    autoState.rebuild();
   }
 }
 
@@ -566,12 +635,12 @@ class _AutoState extends State<Auto> {
 
   @override
   Widget build(BuildContext context) {
-    a1 = new CustomSlider(scorevar: _a1, update: calcA, minvar: 0, maxvar: 2, parent: this);
-    a2 = new CustomSlider(scorevar: _a2, update: calcA, minvar: 0, maxvar: 3, parent: this);
-    a3 = new CustomTextField(scorevar: _a3, update: calcA, maxlength: 2, parent: this);
-    a4 = new CustomTextField(scorevar: _a4, update: calcA, maxlength: 2, parent: this);
-    a5 = new CustomTextField(scorevar: _a5, update: calcA, maxlength: 2, parent: this);
-    a6 = new CustomSlider(scorevar: _a6, update: calcA, minvar: 0, maxvar: 2, parent: this);
+    a1 = new CustomSlider(scorevar: '_a1', update: calcA, minvar: 0, maxvar: 2, parent: this);
+    a2 = new CustomSlider(scorevar: '_a2', update: calcA, minvar: 0, maxvar: 3, parent: this);
+    a3 = new CustomTextField(scorevar: '_a3', update: calcA, maxlength: 2, parent: this);
+    a4 = new CustomTextField(scorevar: '_a4', update: calcA, maxlength: 2, parent: this);
+    a5 = new CustomTextField(scorevar: '_a5', update: calcA, maxlength: 2, parent: this);
+    a6 = new CustomSlider(scorevar: '_a6', update: calcA, minvar: 0, maxvar: 2, parent: this);
 
     return Card(
       color: Colors.grey.shade900,
@@ -689,19 +758,36 @@ class _AutoState extends State<Auto> {
     );
   }
 
+  void reset() {
+    _a1.setInt(0);
+    _a2.setInt(0);
+    _a3.setInt(0);
+    _a4.setInt(0);
+    _a5.setInt(0);
+    _a6.setInt(0);
+    rebuild();
+  }
+
   void rebuild() {
     setState(() {});
   }
 }
 
 class Teleop extends StatefulWidget {
-  _TeleopState teleopstate = new _TeleopState();
+  _TeleopState teleopState = new _TeleopState();
 
   @override
-  _TeleopState createState() => teleopstate;
+  _TeleopState createState() {
+    teleopState = new _TeleopState();
+    return teleopState;
+  }
+
+  void reset() {
+    teleopState.reset();
+  }
 
   void rebuild() {
-    teleopstate.rebuild();
+    teleopState.rebuild();
   }
 }
 
@@ -723,9 +809,9 @@ class _TeleopState extends State<Teleop> {
 
   @override
   Widget build(BuildContext context) {
-    t1 = new CustomTextField(scorevar: _t1, update: calcT, maxlength: 2, parent: this);
-    t2 = new CustomTextField(scorevar: _t2, update: calcT, maxlength: 2, parent: this);
-    t3 = new CustomTextField(scorevar: _t3, update: calcT, maxlength: 2, parent: this);
+    t1 = new CustomTextField(scorevar: '_t1', update: calcT, maxlength: 2, parent: this);
+    t2 = new CustomTextField(scorevar: '_t2', update: calcT, maxlength: 2, parent: this);
+    t3 = new CustomTextField(scorevar: '_t3', update: calcT, maxlength: 2, parent: this);
 
     return Card(
       color: Colors.grey.shade900,
@@ -798,19 +884,33 @@ class _TeleopState extends State<Teleop> {
     );
   }
 
+  void reset() {
+    _t1.setInt(0);
+    _t2.setInt(0);
+    _t3.setInt(0);
+    rebuild();
+  }
+
   void rebuild() {
     setState(() {});
   }
 }
 
 class EndGame extends StatefulWidget {
-  _EndGameState endgamestate = new _EndGameState();
+  _EndGameState endGameState = new _EndGameState();
 
   @override
-  _EndGameState createState() => endgamestate;
+  _EndGameState createState() {
+    endGameState = new _EndGameState();
+    return endGameState;
+  }
+
+  void reset() {
+    endGameState.reset();
+  }
 
   void rebuild() {
-    endgamestate.rebuild();
+    endGameState.rebuild();
   }
 }
 
@@ -833,10 +933,10 @@ class _EndGameState extends State<EndGame> {
 
   @override
   Widget build(BuildContext context) {
-    eg1 = CustomSlider(scorevar: _eg1, update: calcEG, minvar: 0, maxvar: 3, parent: this);
-    eg2 = CustomTextField(scorevar: _eg2, update: calcEG, maxlength: 2, parent: this);
-    eg3 = CustomSlider(scorevar: _eg3, update: calcEG, minvar: 0, maxvar: 2, parent: this);
-    eg4 = CustomSlider(scorevar: _eg4, update: calcEG, minvar: 0, maxvar: 2, parent: this);
+    eg1 = CustomSlider(scorevar: '_eg1', update: calcEG, minvar: 0, maxvar: 3, parent: this);
+    eg2 = CustomTextField(scorevar: '_eg2', update: calcEG, maxlength: 2, parent: this);
+    eg3 = CustomSlider(scorevar: '_eg3', update: calcEG, minvar: 0, maxvar: 2, parent: this);
+    eg4 = CustomSlider(scorevar: '_eg4', update: calcEG, minvar: 0, maxvar: 2, parent: this);
 
     return Card(
       color: Colors.grey.shade900,
@@ -912,22 +1012,34 @@ class _EndGameState extends State<EndGame> {
     );
   }
 
+  void reset() {
+    _eg1.setInt(0);
+    _eg2.setInt(0);
+    _eg3.setInt(0);
+    _eg4.setInt(0);
+    rebuild();
+  }
+
   void rebuild() {
     setState(() {});
   }
 }
 
 class Penalty extends StatefulWidget {
-  _PenaltyState penaltystate = new _PenaltyState();
+  _PenaltyState penaltyState = new _PenaltyState();
 
   @override
   _PenaltyState createState() {
-    penaltystate = new _PenaltyState();
-    return penaltystate;
+    penaltyState = new _PenaltyState();
+    return penaltyState;
+  }
+
+  void reset() {
+    penaltyState.reset();
   }
 
   void rebuild() {
-    penaltystate.rebuild();
+    penaltyState.rebuild();
   }
 }
 
@@ -948,8 +1060,8 @@ class _PenaltyState extends State<Penalty> {
 
   @override
   Widget build(BuildContext context) {
-    p1 = new CustomTextField(scorevar: _p1, update: calcP, maxlength: 2, parent: this);
-    p2 = new CustomTextField(scorevar: _p2, update: calcP, maxlength: 2, parent: this);
+    p1 = new CustomTextField(scorevar: '_p1', update: calcP, maxlength: 2, parent: this);
+    p2 = new CustomTextField(scorevar: '_p2', update: calcP, maxlength: 2, parent: this);
 
     return Card(
       color: Colors.grey.shade900,
@@ -1001,6 +1113,12 @@ class _PenaltyState extends State<Penalty> {
         ),
       ),
     );
+  }
+
+  void reset() {
+    _p1.setInt(0);
+    _p2.setInt(0);
+    rebuild();
   }
 
   void rebuild() {
