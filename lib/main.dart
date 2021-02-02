@@ -276,6 +276,7 @@ class _ScoreState extends State<Score> {
                         fontWeight: FontWeight.bold,
                     ),
                 ),
+                SizedBox(width: 10.0),
                 IconButton(
                     icon: Icon(
                         Icons.refresh,
@@ -380,7 +381,7 @@ class _SectionTitleState extends State<SectionTitle> {
 }
 
 class CustomSlider extends StatefulWidget {
-    String scorevar = '';
+    Num scorevar = new Num();
     Function update = () {};
     double minvar = 0;
     double maxvar = 3;
@@ -407,19 +408,7 @@ class _CustomSliderState extends State<CustomSlider> {
 
     @override
     Widget build(BuildContext context) {
-        if (widget.scorevar == '_a1') {
-            scorevar = _a1;
-        } else if (widget.scorevar == '_a2') {
-            scorevar = _a2;
-        } else if (widget.scorevar == '_a6') {
-            scorevar = _a6;
-        } else if (widget.scorevar == '_eg1') {
-            scorevar = _eg1;
-        } else if (widget.scorevar == '_eg3') {
-            scorevar = _eg3;
-        } else if (widget.scorevar == '_eg4') {
-            scorevar = _eg4;
-        }
+        scorevar = widget.scorevar;
         update = widget.update;
         minvar = widget.minvar;
         maxvar = widget.maxvar;
@@ -463,7 +452,7 @@ class _CustomSliderState extends State<CustomSlider> {
 }
 
 class CustomTextField extends StatefulWidget {
-    String scorevar = '';
+    Num scorevar = new Num();
     Function update = () {};
     int maxlength = 0;
     dynamic parent = 0;
@@ -490,26 +479,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
     @override
     Widget build(BuildContext context) {
-        if (widget.scorevar == '_a3') {
-            scorevar = _a3;
-        } else if (widget.scorevar == '_a4') {
-            scorevar = _a4;
-        } else if (widget.scorevar == '_a5') {
-            scorevar = _a5;
-        } else if (widget.scorevar == '_t1') {
-            scorevar = _t1;
-        } else if (widget.scorevar == '_t2') {
-            scorevar = _t2;
-        } else if (widget.scorevar == '_t3') {
-            scorevar = _t3;
-        } else if (widget.scorevar == '_eg2') {
-            scorevar = _eg2;
-        } else if (widget.scorevar == '_p1') {
-            scorevar = _p1;
-        } else if (widget.scorevar == '_p2') {
-            scorevar = _p2;
-        }
-
+        scorevar = widget.scorevar;
         update = widget.update;
         maxlength = widget.maxlength;
         parent = widget.parent;
@@ -632,12 +602,12 @@ class _AutoState extends State<Auto> {
 
     @override
     Widget build(BuildContext context) {
-        a1 = new CustomSlider(scorevar: '_a1', update: calcA, minvar: 0, maxvar: 2, parent: this);
-        a2 = new CustomSlider(scorevar: '_a2', update: calcA, minvar: 0, maxvar: 3, parent: this);
-        a3 = new CustomTextField(scorevar: '_a3', update: calcA, maxlength: 2, parent: this);
-        a4 = new CustomTextField(scorevar: '_a4', update: calcA, maxlength: 2, parent: this);
-        a5 = new CustomTextField(scorevar: '_a5', update: calcA, maxlength: 2, parent: this);
-        a6 = new CustomSlider(scorevar: '_a6', update: calcA, minvar: 0, maxvar: 2, parent: this);
+        a1 = new CustomSlider(scorevar: _a1, update: calcA, minvar: 0, maxvar: 2, parent: this);
+        a2 = new CustomSlider(scorevar: _a2, update: calcA, minvar: 0, maxvar: 3, parent: this);
+        a3 = new CustomTextField(scorevar: _a3, update: calcA, maxlength: 2, parent: this);
+        a4 = new CustomTextField(scorevar: _a4, update: calcA, maxlength: 2, parent: this);
+        a5 = new CustomTextField(scorevar: _a5, update: calcA, maxlength: 2, parent: this);
+        a6 = new CustomSlider(scorevar: _a6, update: calcA, minvar: 0, maxvar: 2, parent: this);
 
         return Card(
             color: Colors.grey.shade900,
@@ -799,9 +769,9 @@ class _TeleopState extends State<Teleop> {
 
     @override
     Widget build(BuildContext context) {
-        t1 = new CustomTextField(scorevar: '_t1', update: calcT, maxlength: 2, parent: this);
-        t2 = new CustomTextField(scorevar: '_t2', update: calcT, maxlength: 2, parent: this);
-        t3 = new CustomTextField(scorevar: '_t3', update: calcT, maxlength: 2, parent: this);
+        t1 = new CustomTextField(scorevar: _t1, update: calcT, maxlength: 2, parent: this);
+        t2 = new CustomTextField(scorevar: _t2, update: calcT, maxlength: 2, parent: this);
+        t3 = new CustomTextField(scorevar: _t3, update: calcT, maxlength: 2, parent: this);
 
         return Card(
             color: Colors.grey.shade900,
@@ -920,10 +890,10 @@ class _EndGameState extends State<EndGame> {
 
     @override
     Widget build(BuildContext context) {
-        eg1 = CustomSlider(scorevar: '_eg1', update: calcEG, minvar: 0, maxvar: 3, parent: this);
-        eg2 = CustomTextField(scorevar: '_eg2', update: calcEG, maxlength: 2, parent: this);
-        eg3 = CustomSlider(scorevar: '_eg3', update: calcEG, minvar: 0, maxvar: 2, parent: this);
-        eg4 = CustomSlider(scorevar: '_eg4', update: calcEG, minvar: 0, maxvar: 2, parent: this);
+        eg1 = CustomSlider(scorevar: _eg1, update: calcEG, minvar: 0, maxvar: 3, parent: this);
+        eg2 = CustomTextField(scorevar: _eg2, update: calcEG, maxlength: 2, parent: this);
+        eg3 = CustomSlider(scorevar: _eg3, update: calcEG, minvar: 0, maxvar: 2, parent: this);
+        eg4 = CustomSlider(scorevar: _eg4, update: calcEG, minvar: 0, maxvar: 2, parent: this);
 
         return Card(
             color: Colors.grey.shade900,
@@ -1041,8 +1011,8 @@ class _PenaltyState extends State<Penalty> {
 
     @override
     Widget build(BuildContext context) {
-        p1 = new CustomTextField(scorevar: '_p1', update: calcP, maxlength: 2, parent: this);
-        p2 = new CustomTextField(scorevar: '_p2', update: calcP, maxlength: 2, parent: this);
+        p1 = new CustomTextField(scorevar: _p1, update: calcP, maxlength: 2, parent: this);
+        p2 = new CustomTextField(scorevar: _p2, update: calcP, maxlength: 2, parent: this);
 
         return Card(
             color: Colors.grey.shade900,
