@@ -451,25 +451,25 @@ class _CustomSliderState extends State<CustomSlider> {
     }
 }
 
-class CustomTextField extends StatefulWidget {
+class CustomButtonInput extends StatefulWidget {
     Num scorevar = new Num();
     Function update = () {};
     int maxlength = 0;
     dynamic parent = 0;
 
-    _CustomTextFieldState customTextFieldState = new _CustomTextFieldState();
+    _CustomButtonInputState customButtonInputState = new _CustomButtonInputState();
 
-    CustomTextField({Key key, this.scorevar, this.update, this.maxlength, this.parent}) : super(key: key);
+    CustomButtonInput({Key key, this.scorevar, this.update, this.maxlength, this.parent}) : super(key: key);
 
     @override
-    _CustomTextFieldState createState() => customTextFieldState;
+    _CustomButtonInputState createState() => customButtonInputState;
 
     void rebuild() {
-        customTextFieldState.rebuild();
+        customButtonInputState.rebuild();
     }
 }
 
-class _CustomTextFieldState extends State<CustomTextField> {
+class _CustomButtonInputState extends State<CustomButtonInput> {
     Num scorevar;
     Function update;
     int maxlength;
@@ -484,52 +484,106 @@ class _CustomTextFieldState extends State<CustomTextField> {
         maxlength = widget.maxlength;
         parent = widget.parent;
 
-        return TextField(
-            autocorrect: false,
-            autofocus: false,
-            controller: _controller,
-            cursorColor: Colors.white,
-            cursorRadius: Radius.circular(2.0),
-            decoration: InputDecoration(
-                focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white, width: 2.0),
+        return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+                IconButton(
+                    icon: Icon(
+                        Icons.exposure_neg_1_rounded,
+                        color: Colors.white,
+                    ),
+                    tooltip: '-1',
+                    onPressed: () {
+                        scorevar.setInt(scorevar.getInt() > 0 ? scorevar.getInt() - 1 : 0);
+                        update();
+                        setState(() {});
+                    },
                 ),
-                enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.grey.shade400, width: 1.5),
+                SizedBox(width: 10.0),
+                Text(
+                    '${scorevar.getInt()}',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: mobile ? 12.0 : 18.0,
+                        fontWeight: FontWeight.bold,
+                    ),
                 ),
-                counterText: '',
-            ),
-            expands: false,
-            inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
-            keyboardType: TextInputType.number,
-            maxLength: maxlength,
-            maxLengthEnforced: true,
-            onChanged: (String value) {
-                if (value == '' || value == null) {
-                    scorevar.setInt(0);
-                } else {
-                    scorevar.setInt(int.parse(value));
-                }
-                update();
-                setState(() {});
-            },
-            onSubmitted: (String value) {
-                if (value == '' || value == null) {
-                    scorevar.setInt(0);
-                } else {
-                    scorevar.setInt(int.parse(value));
-                }
-                update();
-                setState(() {});
-            },
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: 14.0,
-            ),
-            textAlign: TextAlign.center,
-            textAlignVertical: TextAlignVertical.center,
-            textDirection: TextDirection.ltr,
+                SizedBox(width: 10.0),
+                IconButton(
+                    icon: Icon(
+                        Icons.exposure_plus_1_rounded,
+                        color: Colors.white,
+                    ),
+                    tooltip: '+1',
+                    onPressed: () {
+                        scorevar.setInt(scorevar.getInt() + 1);
+                        update();
+                        setState(() {});
+                    },
+                ),
+                IconButton(
+                    icon: Icon(
+                        Icons.filter_3,
+                        color: Colors.white,
+                    ),
+                    tooltip: '+3',
+                    onPressed: () {
+                        scorevar.setInt(scorevar.getInt() + 3);
+                        update();
+                        setState(() {});
+                    },
+                ),
+            ],
         );
+
+        // return TextField(
+        //     autocorrect: false,
+        //     autofocus: false,
+        //     controller: _controller,
+        //     cursorColor: Colors.white,
+        //     cursorRadius: Radius.circular(2.0),
+        //     decoration: InputDecoration(
+        //         focusedBorder: OutlineInputBorder(
+        //             borderSide: BorderSide(color: Colors.white, width: 2.0),
+        //         ),
+        //         enabledBorder: OutlineInputBorder(
+        //             borderSide: BorderSide(color: Colors.grey.shade400, width: 1.5),
+        //         ),
+        //         counterText: '',
+        //     ),
+        //     expands: false,
+        //     inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+        //     keyboardType: TextInputType.number,
+        //     maxLength: maxlength,
+        //     maxLengthEnforced: true,
+        //     onChanged: (String value) {
+        //         if (value == '' || value == null) {
+        //             scorevar.setInt(0);
+        //         } else {
+        //             scorevar.setInt(int.parse(value));
+        //         }
+        //         update();
+        //         setState(() {});
+        //     },
+        //     onSubmitted: (String value) {
+        //         if (value == '' || value == null) {
+        //             scorevar.setInt(0);
+        //         } else {
+        //             scorevar.setInt(int.parse(value));
+        //         }
+        //         update();
+        //         setState(() {});
+        //     },
+        //     style: TextStyle(
+        //         color: Colors.white,
+        //         fontSize: 14.0,
+        //     ),
+        //     textAlign: TextAlign.center,
+        //     textAlignVertical: TextAlignVertical.center,
+        //     textDirection: TextDirection.ltr,
+        // );
     }
 
     void rebuild() {
@@ -584,9 +638,9 @@ class Auto extends StatefulWidget {
 class _AutoState extends State<Auto> {
     CustomSlider a1;
     CustomSlider a2;
-    CustomTextField a3;
-    CustomTextField a4;
-    CustomTextField a5;
+    CustomButtonInput a3;
+    CustomButtonInput a4;
+    CustomButtonInput a5;
     CustomSlider a6;
 
     @override
@@ -604,9 +658,9 @@ class _AutoState extends State<Auto> {
     Widget build(BuildContext context) {
         a1 = new CustomSlider(scorevar: _a1, update: calcA, minvar: 0, maxvar: 2, parent: this);
         a2 = new CustomSlider(scorevar: _a2, update: calcA, minvar: 0, maxvar: 3, parent: this);
-        a3 = new CustomTextField(scorevar: _a3, update: calcA, maxlength: 2, parent: this);
-        a4 = new CustomTextField(scorevar: _a4, update: calcA, maxlength: 2, parent: this);
-        a5 = new CustomTextField(scorevar: _a5, update: calcA, maxlength: 2, parent: this);
+        a3 = new CustomButtonInput(scorevar: _a3, update: calcA, maxlength: 2, parent: this);
+        a4 = new CustomButtonInput(scorevar: _a4, update: calcA, maxlength: 2, parent: this);
+        a5 = new CustomButtonInput(scorevar: _a5, update: calcA, maxlength: 2, parent: this);
         a6 = new CustomSlider(scorevar: _a6, update: calcA, minvar: 0, maxvar: 2, parent: this);
 
         return Card(
@@ -652,11 +706,7 @@ class _AutoState extends State<Auto> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
-                                SizedBox(
-                                    width: 60.0,
-                                    child: a3,
-                                ),
-                                SizedBox(width: 20.0),
+                                a3,
                                 Text(
                                     'Low Goal',
                                     style: TextStyle(
@@ -671,11 +721,7 @@ class _AutoState extends State<Auto> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
-                                SizedBox(
-                                    width: 60.0,
-                                    child: a4,
-                                ),
-                                SizedBox(width: 20.0),
+                                a4,
                                 Text(
                                     'Mid Goal',
                                     style: TextStyle(
@@ -690,11 +736,7 @@ class _AutoState extends State<Auto> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
-                                SizedBox(
-                                    width: 60.0,
-                                    child: a5,
-                                ),
-                                SizedBox(width: 20.0),
+                                a5,
                                 Text(
                                     'High Goal',
                                     style: TextStyle(
@@ -752,9 +794,9 @@ class Teleop extends StatefulWidget {
 }
 
 class _TeleopState extends State<Teleop> {
-    CustomTextField t1;
-    CustomTextField t2;
-    CustomTextField t3;
+    CustomButtonInput t1;
+    CustomButtonInput t2;
+    CustomButtonInput t3;
 
     @override
     void initState() {
@@ -769,9 +811,9 @@ class _TeleopState extends State<Teleop> {
 
     @override
     Widget build(BuildContext context) {
-        t1 = new CustomTextField(scorevar: _t1, update: calcT, maxlength: 2, parent: this);
-        t2 = new CustomTextField(scorevar: _t2, update: calcT, maxlength: 2, parent: this);
-        t3 = new CustomTextField(scorevar: _t3, update: calcT, maxlength: 2, parent: this);
+        t1 = new CustomButtonInput(scorevar: _t1, update: calcT, maxlength: 2, parent: this);
+        t2 = new CustomButtonInput(scorevar: _t2, update: calcT, maxlength: 2, parent: this);
+        t3 = new CustomButtonInput(scorevar: _t3, update: calcT, maxlength: 2, parent: this);
 
         return Card(
             color: Colors.grey.shade900,
@@ -786,11 +828,7 @@ class _TeleopState extends State<Teleop> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                              SizedBox(
-                                  width: 60.0,
-                                  child: t1,
-                              ),
-                              SizedBox(width: 20.0),
+                              t1,
                               Text(
                                   'Low Goal',
                                   style: TextStyle(
@@ -805,11 +843,7 @@ class _TeleopState extends State<Teleop> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                              SizedBox(
-                                  width: 60.0,
-                                  child: t2,
-                              ),
-                              SizedBox(width: 20.0),
+                              t2,
                               Text(
                                   'Mid Goal',
                                   style: TextStyle(
@@ -824,11 +858,7 @@ class _TeleopState extends State<Teleop> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                              SizedBox(
-                                  width: 60.0,
-                                  child: t3,
-                              ),
-                              SizedBox(width: 20.0),
+                              t3,
                               Text(
                                   'High Goal',
                                   style: TextStyle(
@@ -873,7 +903,7 @@ class EndGame extends StatefulWidget {
 
 class _EndGameState extends State<EndGame> {
     CustomSlider eg1;
-    CustomTextField eg2;
+    CustomButtonInput eg2;
     CustomSlider eg3;
     CustomSlider eg4;
 
@@ -891,7 +921,7 @@ class _EndGameState extends State<EndGame> {
     @override
     Widget build(BuildContext context) {
         eg1 = CustomSlider(scorevar: _eg1, update: calcEG, minvar: 0, maxvar: 3, parent: this);
-        eg2 = CustomTextField(scorevar: _eg2, update: calcEG, maxlength: 2, parent: this);
+        eg2 = CustomButtonInput(scorevar: _eg2, update: calcEG, maxlength: 2, parent: this);
         eg3 = CustomSlider(scorevar: _eg3, update: calcEG, minvar: 0, maxvar: 2, parent: this);
         eg4 = CustomSlider(scorevar: _eg4, update: calcEG, minvar: 0, maxvar: 2, parent: this);
 
@@ -921,11 +951,7 @@ class _EndGameState extends State<EndGame> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                              SizedBox(
-                                  width: 60.0,
-                                  child: eg2,
-                              ),
-                              SizedBox(width: 20.0),
+                              eg2,
                               Text(
                                   'Total Rings on Wobble Goals',
                                   style: TextStyle(
@@ -995,8 +1021,8 @@ class Penalty extends StatefulWidget {
 }
 
 class _PenaltyState extends State<Penalty> {
-    CustomTextField p1;
-    CustomTextField p2;
+    CustomButtonInput p1;
+    CustomButtonInput p2;
 
     @override
     void initState() {
@@ -1011,8 +1037,8 @@ class _PenaltyState extends State<Penalty> {
 
     @override
     Widget build(BuildContext context) {
-        p1 = new CustomTextField(scorevar: _p1, update: calcP, maxlength: 2, parent: this);
-        p2 = new CustomTextField(scorevar: _p2, update: calcP, maxlength: 2, parent: this);
+        p1 = new CustomButtonInput(scorevar: _p1, update: calcP, maxlength: 2, parent: this);
+        p2 = new CustomButtonInput(scorevar: _p2, update: calcP, maxlength: 2, parent: this);
 
         return Card(
             color: Colors.grey.shade900,
@@ -1027,11 +1053,7 @@ class _PenaltyState extends State<Penalty> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
-                                SizedBox(
-                                    width: 60.0,
-                                    child: p1,
-                                ),
-                                SizedBox(width: 20.0),
+                                p1,
                                 Text(
                                     'Minor',
                                     style: TextStyle(
@@ -1046,11 +1068,7 @@ class _PenaltyState extends State<Penalty> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
-                                SizedBox(
-                                    width: 60.0,
-                                    child: p2,
-                                ),
-                                SizedBox(width: 20.0),
+                                p2,
                                 Text(
                                     'Major',
                                     style: TextStyle(
