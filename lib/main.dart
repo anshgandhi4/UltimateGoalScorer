@@ -27,7 +27,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
+import 'package:ultimate_goal/num.dart';
 
 int ascore = 0;
 int tscore = 0;
@@ -70,30 +70,10 @@ bool mobile = false;
 void titleReset() {
     totalscore = getA() + getT() + getEG() + getP();
     score.rebuild();
-    try {
-        aTitle.rebuild();
-    } catch (e) {
-        print('aTitle');
-        print(e);
-    }
-    try {
-        tTitle.rebuild();
-    } catch (e) {
-        print('tTitle');
-        print(e);
-    }
-    try {
-        egTitle.rebuild();
-    } catch (e) {
-        print('egTitle');
-        print(e);
-    }
-    try {
-        pTitle.rebuild();
-    } catch (e) {
-        print('pTitle');
-        print(e);
-    }
+    aTitle.rebuild();
+    tTitle.rebuild();
+    egTitle.rebuild();
+    pTitle.rebuild();
 }
 
 int getA() {
@@ -146,26 +126,6 @@ void setP(int newP) {
 
 void calcP() {
     setP(-10 * _p1.getInt() + -30 * _p2.getInt());
-}
-
-class Num {
-    double value = 0;
-
-    void set(double newValue) {
-        value = newValue;
-    }
-
-    void setInt(int newValue) {
-        value = newValue.toDouble();
-    }
-
-    double get() {
-        return value;
-    }
-
-    int getInt() {
-        return value.toInt();
-    }
 }
 
 void main() => runApp(MaterialApp(
@@ -284,36 +244,18 @@ class _ScoreState extends State<Score> {
                     ),
                     tooltip: 'Reset',
                     onPressed: () {
-                        setState(() {
-                            try {
+                        if (this.mounted) {
+                            setState(() {
                                 auto.reset();
-                            } catch (e) {
-                                print('auto');
-                                print(e);
-                            }
-                            try {
                                 teleop.reset();
-                            } catch (e) {
-                                print('teleop');
-                                print(e);
-                            }
-                            try {
                                 endgame.reset();
-                            } catch (e) {
-                                print('endgame');
-                                print(e);
-                            }
-                            try {
                                 penalty.reset();
-                            } catch (e) {
-                                print('penalty');
-                                print(e);
-                            }
-                            calcA();
-                            calcT();
-                            calcEG();
-                            calcP();
-                        });
+                                calcA();
+                                calcT();
+                                calcEG();
+                                calcP();
+                            });
+                        }
                     },
                 ),
             ],
@@ -321,17 +263,19 @@ class _ScoreState extends State<Score> {
     }
 
     void rebuild() {
-        setState(() {});
+        if (this.mounted) {
+            setState(() {});
+        }
     }
 }
 
 class SectionTitle extends StatefulWidget {
-    String title = '';
-    Function update = () {};
+    SectionTitle({Key key, this.title, this.update}) : super(key: key);
+
+    final String title;
+    final Function update;
 
     _SectionTitleState sectionTitleState = new _SectionTitleState();
-
-    SectionTitle({Key key, this.title, this.update}) : super(key: key);
 
     @override
     _SectionTitleState createState() {
@@ -362,7 +306,6 @@ class _SectionTitleState extends State<SectionTitle> {
     Widget build(BuildContext context) {
         title = widget.title;
         update = widget.update;
-        print('building: ${update()}');
 
         return Text(
             '$title: ${update().toInt()}',
@@ -376,20 +319,22 @@ class _SectionTitleState extends State<SectionTitle> {
     }
 
     void rebuild() {
-        setState(() {});
+        if (this.mounted) {
+            setState(() {});
+        }
     }
 }
 
 class CustomSlider extends StatefulWidget {
-    Num scorevar = new Num();
-    Function update = () {};
-    double minvar = 0;
-    double maxvar = 3;
-    dynamic parent = 0;
+    CustomSlider({Key key, this.scorevar, this.update, this.minvar, this.maxvar, this.parent}): super(key: key);
+
+    final Num scorevar;
+    final Function update;
+    final double minvar;
+    final double maxvar;
+    final dynamic parent;
 
     _CustomSliderState customSliderState = new _CustomSliderState();
-
-    CustomSlider({Key key, this.scorevar, this.update, this.minvar, this.maxvar, this.parent}): super(key: key);
 
     @override
     _CustomSliderState createState() => customSliderState;
@@ -429,11 +374,11 @@ class _CustomSliderState extends State<CustomSlider> {
                     onChanged: (double value) {
                         scorevar.set(value);
                         update();
-                        auto.rebuild();
-                        setState(() {
-                            scorevar.set(value);
-                            auto.rebuild();
-                        });
+                        if (this.mounted) {
+                            setState(() {
+                                scorevar.set(value);
+                            });
+                        }
                     },
                     min: minvar,
                     max: maxvar,
@@ -445,21 +390,23 @@ class _CustomSliderState extends State<CustomSlider> {
     }
 
     void rebuild() {
-        setState(() {
-            update();
-        });
+        if (this.mounted) {
+            setState(() {
+                update();
+            });
+        }
     }
 }
 
 class CustomButtonInput extends StatefulWidget {
-    Num scorevar = new Num();
-    Function update = () {};
-    int maxlength = 0;
-    dynamic parent = 0;
+    CustomButtonInput({Key key, this.scorevar, this.update, this.maxlength, this.parent}) : super(key: key);
+
+    final Num scorevar;
+    final Function update;
+    final int maxlength;
+    final dynamic parent;
 
     _CustomButtonInputState customButtonInputState = new _CustomButtonInputState();
-
-    CustomButtonInput({Key key, this.scorevar, this.update, this.maxlength, this.parent}) : super(key: key);
 
     @override
     _CustomButtonInputState createState() => customButtonInputState;
@@ -474,8 +421,6 @@ class _CustomButtonInputState extends State<CustomButtonInput> {
     Function update;
     int maxlength;
     dynamic parent;
-
-    final _controller = TextEditingController();
 
     @override
     Widget build(BuildContext context) {
@@ -497,7 +442,9 @@ class _CustomButtonInputState extends State<CustomButtonInput> {
                     onPressed: () {
                         scorevar.setInt(scorevar.getInt() > 0 ? scorevar.getInt() - 1 : 0);
                         update();
-                        setState(() {});
+                        if (this.mounted) {
+                            setState(() {});
+                        }
                     },
                 ),
                 SizedBox(width: 10.0),
@@ -520,7 +467,9 @@ class _CustomButtonInputState extends State<CustomButtonInput> {
                     onPressed: () {
                         scorevar.setInt(scorevar.getInt() + 1);
                         update();
-                        setState(() {});
+                        if (this.mounted) {
+                            setState(() {});
+                        }
                     },
                 ),
                 IconButton(
@@ -532,66 +481,22 @@ class _CustomButtonInputState extends State<CustomButtonInput> {
                     onPressed: () {
                         scorevar.setInt(scorevar.getInt() + 3);
                         update();
-                        setState(() {});
+                        if (this.mounted) {
+                            setState(() {});
+                        }
                     },
                 ),
             ],
         );
-
-        // return TextField(
-        //     autocorrect: false,
-        //     autofocus: false,
-        //     controller: _controller,
-        //     cursorColor: Colors.white,
-        //     cursorRadius: Radius.circular(2.0),
-        //     decoration: InputDecoration(
-        //         focusedBorder: OutlineInputBorder(
-        //             borderSide: BorderSide(color: Colors.white, width: 2.0),
-        //         ),
-        //         enabledBorder: OutlineInputBorder(
-        //             borderSide: BorderSide(color: Colors.grey.shade400, width: 1.5),
-        //         ),
-        //         counterText: '',
-        //     ),
-        //     expands: false,
-        //     inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
-        //     keyboardType: TextInputType.number,
-        //     maxLength: maxlength,
-        //     maxLengthEnforced: true,
-        //     onChanged: (String value) {
-        //         if (value == '' || value == null) {
-        //             scorevar.setInt(0);
-        //         } else {
-        //             scorevar.setInt(int.parse(value));
-        //         }
-        //         update();
-        //         setState(() {});
-        //     },
-        //     onSubmitted: (String value) {
-        //         if (value == '' || value == null) {
-        //             scorevar.setInt(0);
-        //         } else {
-        //             scorevar.setInt(int.parse(value));
-        //         }
-        //         update();
-        //         setState(() {});
-        //     },
-        //     style: TextStyle(
-        //         color: Colors.white,
-        //         fontSize: 14.0,
-        //     ),
-        //     textAlign: TextAlign.center,
-        //     textAlignVertical: TextAlignVertical.center,
-        //     textDirection: TextDirection.ltr,
-        // );
     }
 
     void rebuild() {
-        setState(() {
-            scorevar.setInt(0);
-            _controller.text = '';
-            update();
-        });
+        if (this.mounted) {
+            setState(() {
+                scorevar.setInt(0);
+                update();
+            });
+        }
     }
 }
 
@@ -616,6 +521,7 @@ class Auto extends StatefulWidget {
 
     @override
     _AutoState createState() {
+        auto = this;
         autoState = new _AutoState();
         return autoState;
     }
@@ -650,7 +556,6 @@ class _AutoState extends State<Auto> {
 
     @override
     void dispose() {
-        auto = new Auto();
         super.dispose();
     }
 
@@ -768,7 +673,9 @@ class _AutoState extends State<Auto> {
     }
 
     void rebuild() {
-        setState(() {});
+        if (this.mounted) {
+            setState(() {});
+        }
     }
 }
 
@@ -777,6 +684,7 @@ class Teleop extends StatefulWidget {
 
     @override
     _TeleopState createState() {
+        teleop = this;
         teleopState = new _TeleopState();
         return teleopState;
     }
@@ -805,7 +713,6 @@ class _TeleopState extends State<Teleop> {
 
     @override
     void dispose() {
-        teleop = new Teleop();
         super.dispose();
     }
 
@@ -875,7 +782,9 @@ class _TeleopState extends State<Teleop> {
     }
 
     void rebuild() {
-        setState(() {});
+        if (this.mounted) {
+            setState(() {});
+        }
     }
 }
 
@@ -884,6 +793,7 @@ class EndGame extends StatefulWidget {
 
     @override
     _EndGameState createState() {
+        endgame = this;
         endGameState = new _EndGameState();
         return endGameState;
     }
@@ -914,7 +824,6 @@ class _EndGameState extends State<EndGame> {
 
     @override
     void dispose() {
-        endgame = new EndGame();
         super.dispose();
     }
 
@@ -996,7 +905,9 @@ class _EndGameState extends State<EndGame> {
     }
 
     void rebuild() {
-        setState(() {});
+        if (this.mounted) {
+            setState(() {});
+        }
     }
 }
 
@@ -1005,6 +916,7 @@ class Penalty extends StatefulWidget {
 
     @override
     _PenaltyState createState() {
+        penalty = this;
         penaltyState = new _PenaltyState();
         return penaltyState;
     }
@@ -1031,7 +943,6 @@ class _PenaltyState extends State<Penalty> {
 
     @override
     void dispose() {
-        penalty = new Penalty();
         super.dispose();
     }
 
@@ -1085,6 +996,8 @@ class _PenaltyState extends State<Penalty> {
     }
 
     void rebuild() {
-        setState(() {});
+        if (this.mounted) {
+            setState(() {});
+        }
     }
 }
