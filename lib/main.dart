@@ -293,16 +293,6 @@ class _SectionTitleState extends State<SectionTitle> {
     Function update = () {};
 
     @override
-    void initState() {
-        super.initState();
-    }
-
-    @override
-    void dispose() {
-        super.dispose();
-    }
-
-    @override
     Widget build(BuildContext context) {
         title = widget.title;
         update = widget.update;
@@ -433,12 +423,16 @@ class _CustomButtonInputState extends State<CustomButtonInput> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-                IconButton(
-                    icon: Icon(
-                        Icons.exposure_neg_1_rounded,
-                        color: Colors.white,
+                RaisedButton(
+                    child: Text('-1',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: mobile ? 8.0 : 12.0,
+                        )
                     ),
-                    tooltip: '-1',
+                    color: Colors.grey.shade800,
+                    elevation: 8.0,
                     onPressed: () {
                         scorevar.setInt(scorevar.getInt() > 0 ? scorevar.getInt() - 1 : 0);
                         update();
@@ -446,8 +440,9 @@ class _CustomButtonInputState extends State<CustomButtonInput> {
                             setState(() {});
                         }
                     },
+                    padding: EdgeInsets.all(20),
+                    shape: CircleBorder(),
                 ),
-                SizedBox(width: 10.0),
                 Text(
                     '${scorevar.getInt()}',
                     textAlign: TextAlign.center,
@@ -457,13 +452,16 @@ class _CustomButtonInputState extends State<CustomButtonInput> {
                         fontWeight: FontWeight.bold,
                     ),
                 ),
-                SizedBox(width: 10.0),
-                IconButton(
-                    icon: Icon(
-                        Icons.exposure_plus_1_rounded,
-                        color: Colors.white,
+                RaisedButton(
+                    child: Text('+1',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: mobile ? 8.0 : 12.0,
+                        )
                     ),
-                    tooltip: '+1',
+                    color: Colors.grey.shade800,
+                    elevation: 8.0,
                     onPressed: () {
                         scorevar.setInt(scorevar.getInt() + 1);
                         update();
@@ -471,13 +469,19 @@ class _CustomButtonInputState extends State<CustomButtonInput> {
                             setState(() {});
                         }
                     },
+                    padding: EdgeInsets.all(20),
+                    shape: CircleBorder(),
                 ),
-                IconButton(
-                    icon: Icon(
-                        Icons.filter_3,
-                        color: Colors.white,
+                RaisedButton(
+                    child: Text('+3',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: mobile ? 8.0 : 12.0,
+                        )
                     ),
-                    tooltip: '+3',
+                    color: Colors.grey.shade800,
+                    elevation: 8.0,
                     onPressed: () {
                         scorevar.setInt(scorevar.getInt() + 3);
                         update();
@@ -485,6 +489,8 @@ class _CustomButtonInputState extends State<CustomButtonInput> {
                             setState(() {});
                         }
                     },
+                    padding: EdgeInsets.all(20),
+                    shape: CircleBorder(),
                 ),
             ],
         );
@@ -548,16 +554,6 @@ class _AutoState extends State<Auto> {
     CustomButtonInput a4;
     CustomButtonInput a5;
     CustomSlider a6;
-
-    @override
-    void initState() {
-        super.initState();
-    }
-
-    @override
-    void dispose() {
-        super.dispose();
-    }
 
     @override
     Widget build(BuildContext context) {
@@ -707,16 +703,6 @@ class _TeleopState extends State<Teleop> {
     CustomButtonInput t3;
 
     @override
-    void initState() {
-        super.initState();
-    }
-
-    @override
-    void dispose() {
-        super.dispose();
-    }
-
-    @override
     Widget build(BuildContext context) {
         t1 = new CustomButtonInput(scorevar: _t1, update: calcT, maxlength: 2, parent: this);
         t2 = new CustomButtonInput(scorevar: _t2, update: calcT, maxlength: 2, parent: this);
@@ -816,16 +802,6 @@ class _EndGameState extends State<EndGame> {
     CustomButtonInput eg2;
     CustomSlider eg3;
     CustomSlider eg4;
-
-    @override
-    void initState() {
-        super.initState();
-    }
-
-    @override
-    void dispose() {
-        super.dispose();
-    }
 
     @override
     Widget build(BuildContext context) {
@@ -935,16 +911,6 @@ class Penalty extends StatefulWidget {
 class _PenaltyState extends State<Penalty> {
     CustomButtonInput p1;
     CustomButtonInput p2;
-
-    @override
-    void initState() {
-        super.initState();
-    }
-
-    @override
-    void dispose() {
-        super.dispose();
-    }
 
     @override
     Widget build(BuildContext context) {
