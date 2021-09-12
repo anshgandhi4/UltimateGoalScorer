@@ -359,7 +359,7 @@ class _CustomSliderState extends State<CustomSlider> {
             ),
             child: Container(
                 width: 150.0,
-                child: Slider.adaptive(
+                child: Slider(
                     value: scorevar.get(),
                     onChanged: (double value) {
                         scorevar.set(value);
@@ -423,75 +423,70 @@ class _CustomButtonInputState extends State<CustomButtonInput> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-                RaisedButton(
-                    child: Text('-1',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: mobile ? 8.0 : 12.0,
-                        )
+                SizedBox(
+                    width: 56,
+                    child: MaterialButton(
+                        child: Text('-1',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: mobile ? 8.0 : 12.0,
+                            )
+                        ),
+                        color: Colors.grey.shade800,
+                        elevation: 8.0,
+                        onPressed: () {
+                            scorevar.setInt(scorevar.getInt() > 0 ? scorevar.getInt() - 1 : 0);
+                            update();
+                            if (this.mounted) {
+                                setState(() {});
+                            }
+                        },
+                        padding: EdgeInsets.all(20),
+                        shape: CircleBorder(),
                     ),
-                    color: Colors.grey.shade800,
+                ),
+                SizedBox(
+                    width: 56,
+                    child: MaterialButton(
+                        child: Text('+1',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: mobile ? 8.0 : 12.0,
+                            )
+                        ),
+                        color: Colors.grey.shade800,
+                        elevation: 8.0,
+                        onPressed: () {
+                            scorevar.setInt(scorevar.getInt() + 1);
+                            update();
+                            if (this.mounted) {
+                                setState(() {});
+                            }
+                        },
+                        padding: EdgeInsets.all(20),
+                        shape: CircleBorder(),
+                    ),
+                ),
+                SizedBox(width: 5.0),
+                Card(
+                    color: Colors.grey.shade700,
                     elevation: 8.0,
-                    onPressed: () {
-                        scorevar.setInt(scorevar.getInt() > 0 ? scorevar.getInt() - 1 : 0);
-                        update();
-                        if (this.mounted) {
-                            setState(() {});
-                        }
-                    },
-                    padding: EdgeInsets.all(20),
-                    shape: CircleBorder(),
-                ),
-                Text(
-                    '${scorevar.getInt()}',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: mobile ? 12.0 : 18.0,
-                        fontWeight: FontWeight.bold,
+                    child: Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                            '${scorevar.getInt()}',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: mobile ? 12.0 : 18.0,
+                                fontWeight: FontWeight.bold,
+                            ),
+                        ),
                     ),
                 ),
-                RaisedButton(
-                    child: Text('+1',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: mobile ? 8.0 : 12.0,
-                        )
-                    ),
-                    color: Colors.grey.shade800,
-                    elevation: 8.0,
-                    onPressed: () {
-                        scorevar.setInt(scorevar.getInt() + 1);
-                        update();
-                        if (this.mounted) {
-                            setState(() {});
-                        }
-                    },
-                    padding: EdgeInsets.all(20),
-                    shape: CircleBorder(),
-                ),
-                RaisedButton(
-                    child: Text('+3',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: mobile ? 8.0 : 12.0,
-                        )
-                    ),
-                    color: Colors.grey.shade800,
-                    elevation: 8.0,
-                    onPressed: () {
-                        scorevar.setInt(scorevar.getInt() + 3);
-                        update();
-                        if (this.mounted) {
-                            setState(() {});
-                        }
-                    },
-                    padding: EdgeInsets.all(20),
-                    shape: CircleBorder(),
-                ),
+                SizedBox(width: 15.0),
             ],
         );
     }
